@@ -1,9 +1,9 @@
 package Enums;
 
 public enum Cotizaciones {
-	DOLAR,
-	EURO,
-	REAL,
-	PESOMX,
-	YENES
+	Dolar,
+	Euro,
+	Real,
+	PesoMx,
+	Yenes;
 }
