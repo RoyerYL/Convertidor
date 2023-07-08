@@ -1,5 +1,7 @@
 package Procesos;
 import Enums.Cotizaciones;
+import Enums.Distancias;
+import Enums.Temperaturas_Magnitudes;
 
 public class Procesos {
 
@@ -48,18 +50,84 @@ public class Procesos {
 			return convertirToArg(moneda, MonedaExtranjera);
 	}
 
-	private static double convertirTemperatura(double temperatura,  String temperatura2) {
-		
-		switch(temperatura2) 
+	
+	public static double convertirTemperatura(double temperatura, Temperaturas_Magnitudes temp1,Temperaturas_Magnitudes temp2) {
+
+		switch(temp1) 
 		{
-		case "F°":
-			return temperatura+32;
-		case "K°":
-			return temperatura+273;
+		case C:
+			return convertirTemperaturaC(temperatura, temp2);
+		case K:
+			return convertirTemperaturaK(temperatura, temp2);
 		default:
-			return temperatura;
+			return convertirTemperaturaF(temperatura, temp2);
+		}
+	}		
+	
+	public static double convertirTemperaturaC(double temperatura,  Temperaturas_Magnitudes temperatura2) {
+
+			switch(temperatura2) 
+			{
+			case F:
+				return temperatura+32;
+			case K:
+				return temperatura+273;
+			default:
+				return temperatura;
+			}
+	}
+
+	public static double convertirTemperaturaF(double temperatura,  Temperaturas_Magnitudes temperatura2) {
+
+			switch(temperatura2) 
+			{
+			case C:
+				return temperatura-32;
+			case K:
+				return temperatura+255;
+			default:
+				return temperatura;
+			}
+		}
+	
+	public static double convertirTemperaturaK(double temperatura,  Temperaturas_Magnitudes temperatura2) {
+
+				switch(temperatura2) 
+				{
+				case F:
+					return temperatura-255;
+				case C:
+					return temperatura-273;
+				default:
+					return temperatura;
+				}
+		}
+
+	
+	public static double convertirPeso(double peso, boolean porKg) {
+		
+		if(porKg) 
+		{
+			return peso*2.205;
+		}else {
+			return peso/2.205;
 		}
 	}
 
+	
+	public static double convertirDistancia(double distancia,Distancias dist) {
 
+		switch (dist) {
+		case M:
+			return distancia*1000;
+		case Pies:
+			return distancia*3280.84;
+		case Yardas:
+			return distancia*1093.61;
+		case Hectareas:
+			return distancia*100;
+		default:
+			return distancia;
+		}		
+	}
 }

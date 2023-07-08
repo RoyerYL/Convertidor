@@ -18,6 +18,8 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 
 import Enums.Cotizaciones;
+import Enums.Distancias;
+import Enums.Temperaturas_Magnitudes;
 import Procesos.Procesos;
 
 import javax.swing.JSeparator;
@@ -54,19 +56,23 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 	private JPanel panelConvertidorDistancia;
 	private JTextField textTemp_1;
 	private JTextField textTemp_2;
-	private JTextField textField_13;
-	private JTextField textField_14;
+	private JTextField textKg;
+	private JTextField textLibra;
 	private JLabel lblConvertidorDeDistancia;
 	private JLabel lblDistancia1;
-	private JTextField textField_15;
+	private JTextField textDistancia_1;
 	private JSeparator separator_13;
 	private JSeparator separator_14;
-	private JButton btnNewButton_1;
-	private JTextField textField_16;
-	private JComboBox boxCotizaciones_2;
+	private JButton btnConvertirDistancia;
+	private JTextField textDistancia_2;
+	private JComboBox boxDistancias;
 	private JLabel lblMoneda_5;
 	private JLabel lblDistancia2;
 	private JComboBox boxTemp_2;
+	private JButton btnConvertirTemperatura;
+	private JComboBox boxTemp_1;
+	private JButton btnConvertirPeso;
+	private JLabel lblMagnitud_1;
 	
 	public VentanaPrincipal() {
 		getContentPane().setBackground(new Color(70, 130, 180));
@@ -149,16 +155,18 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource()==btnConvertirMoneda) 
 				{
-					String monto=textMontoArg.getText();
 					Boolean argTo=true;
-					if(monto.isEmpty()) 
-					{
-						monto=textMonedaExtranjera.getText();
-						argTo=false;
-						
-					}
-					double montoDouble=Double.parseDouble(monto);
+					double montoDouble;
+					String monto=textMontoArg.getText();
 					
+					try {
+						montoDouble=Double.parseDouble(monto);	
+					} catch (Exception ex) {
+						monto=textMonedaExtranjera.getText();					
+						montoDouble=Double.parseDouble(monto);
+						argTo=false;
+					}
+
 					double conversion=Procesos.convertir(montoDouble,(Cotizaciones) boxCotizaciones.getSelectedItem(),argTo);
 					
 					if(argTo) 
@@ -236,9 +244,44 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		
 		separadores(panelConvertidorTemperatura);
 		
-		JButton btnConvertirTemperatura = new JButton("Convertir");
+		btnConvertirTemperatura = new JButton("Convertir");
 		btnConvertirTemperatura.setBounds(12, 153, 149, 23);
+		btnConvertirTemperatura.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource()==btnConvertirTemperatura) 
+				{
+					String temperatura=textTemp_1.getText();
+					double conversion;
+					double temperaturaDouble;
+					textTemp_1.setText("");
+					
+					try {
+						temperaturaDouble=Double.parseDouble(temperatura);
+						temperaturaDouble=Double.parseDouble(temperatura);						
+						conversion=Procesos.convertirTemperatura(temperaturaDouble,(Temperaturas_Magnitudes) boxTemp_1.getSelectedItem(),(Temperaturas_Magnitudes) boxTemp_2.getSelectedItem());
+						
+						textTemp_2.setText(conversion+"°");
+						textTemp_2.setForeground(new Color(0, 128, 0));
+						textTemp_1.setText("");
+					} catch (NumberFormatException ex2) {
+						temperatura=textTemp_2.getText();
+						temperaturaDouble=Double.parseDouble(temperatura);
+						conversion=Procesos.convertirTemperatura(temperaturaDouble,(Temperaturas_Magnitudes) boxTemp_2.getSelectedItem(),(Temperaturas_Magnitudes) boxTemp_1.getSelectedItem());
+						
+						textTemp_1.setText(conversion+"°");
+						textTemp_1.setForeground(new Color(0, 128, 0));
+						textTemp_2.setText("");
+					}
+					
+
+	
+					
+						
+				}
+			}
+		});
 		panelConvertidorTemperatura.add(btnConvertirTemperatura);
+		
 		
 		textTemp_2 = new JTextField();
 		textTemp_2.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -247,12 +290,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		textTemp_2.setBounds(79, 122, 84, 20);
 		panelConvertidorTemperatura.add(textTemp_2);
 		
-		JComboBox bocTemp_1 = new JComboBox();
-		bocTemp_1.setModel(new DefaultComboBoxModel(new String[] {"C°", "K°", "F°"}));
-		bocTemp_1.setSelectedIndex(0);
-		bocTemp_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		bocTemp_1.setBounds(15, 55, 54, 22);
-		panelConvertidorTemperatura.add(bocTemp_1);
+		boxTemp_1 = new JComboBox();
+		boxTemp_1.setModel(new DefaultComboBoxModel(new Temperaturas_Magnitudes[] {Temperaturas_Magnitudes.C, Temperaturas_Magnitudes.K, Temperaturas_Magnitudes.F}));
+		boxTemp_1.setSelectedIndex(0);
+		boxTemp_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		boxTemp_1.setBounds(15, 55, 54, 22);
+		panelConvertidorTemperatura.add(boxTemp_1);
 		
 		JLabel lblMagnitud = new JLabel("↕");
 		lblMagnitud.setFont(new Font("Tahoma", Font.BOLD, 21));
@@ -261,12 +304,13 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		panelConvertidorTemperatura.add(lblMagnitud);
 		
 		boxTemp_2 = new JComboBox();
-		boxTemp_2.setModel(new DefaultComboBoxModel(new String[] {"K°", "F°", "C° "}));
+		boxTemp_2.setModel(new DefaultComboBoxModel(new Temperaturas_Magnitudes[] {Temperaturas_Magnitudes.F, Temperaturas_Magnitudes.K, Temperaturas_Magnitudes.C}));
 		boxTemp_2.setSelectedIndex(0);
 		boxTemp_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		boxTemp_2.setBounds(15, 121, 54, 22);
 		panelConvertidorTemperatura.add(boxTemp_2);
-		/* Panel Convertidor de Peso */
+		
+	/* Panel Convertidor de Peso */
 		
 		panelConvertirPeso = new JPanel();
 		cardPanel.add(panelConvertirPeso, "name_193248187610800");
@@ -284,30 +328,63 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		lblKg.setBounds(10, 58, 77, 14);
 		panelConvertirPeso.add(lblKg);
 		
-		textField_13 = new JTextField();
-		textField_13.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_13.setColumns(10);
-		textField_13.setBounds(79, 58, 84, 20);
-		panelConvertirPeso.add(textField_13);
+		textKg = new JTextField();
+		textKg.setHorizontalAlignment(SwingConstants.RIGHT);
+		textKg.setColumns(10);
+		textKg.setBounds(79, 58, 84, 20);
+		panelConvertirPeso.add(textKg);
 		
 		separadores(panelConvertirPeso);
 
-		JButton btnConvertirPeso = new JButton("Convertir");
+		btnConvertirPeso = new JButton("Convertir");
 		btnConvertirPeso.setBounds(12, 153, 149, 23);
+		
+		btnConvertirPeso.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(e.getSource()==btnConvertirPeso) 
+				{
+					String peso;
+					Double pesoDouble;
+					try {
+						peso=textKg.getText();
+						pesoDouble=Double.parseDouble(peso);
+						
+						textLibra.setText(Procesos.convertirPeso(pesoDouble,true)+"");
+						textKg.setText("");
+					} catch (NumberFormatException e2) {
+						peso=textLibra.getText();
+						pesoDouble=Double.parseDouble(peso);
+						
+						textKg.setText(Procesos.convertirPeso(pesoDouble,false)+"");
+						textLibra.setText("");
+					}
+				}
+			}
+		});
+		
 		panelConvertirPeso.add(btnConvertirPeso);
 		
-		textField_14 = new JTextField();
-		textField_14.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_14.setForeground(new Color(0, 128, 0));
-		textField_14.setColumns(10);
-		textField_14.setBounds(79, 122, 84, 20);
-		panelConvertirPeso.add(textField_14);
+		textLibra = new JTextField();
+		textLibra.setHorizontalAlignment(SwingConstants.RIGHT);
+		textLibra.setForeground(new Color(0, 128, 0));
+		textLibra.setColumns(10);
+		textLibra.setBounds(79, 122, 84, 20);
+		panelConvertirPeso.add(textLibra);
 		
 		JLabel lblLibra = new JLabel("LIBRA:");
 		lblLibra.setBounds(10, 125, 77, 14);
 		panelConvertirPeso.add(lblLibra);
+		
+		lblMagnitud_1 = new JLabel("↕");
+		lblMagnitud_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMagnitud_1.setFont(new Font("Tahoma", Font.BOLD, 21));
+		lblMagnitud_1.setBounds(103, 78, 35, 43);
+		panelConvertirPeso.add(lblMagnitud_1);
 
-		/* Panel Convertidor de Distancia */
+	/* Panel Convertidor de Distancia */
 		panelConvertidorDistancia = new JPanel();
 		cardPanel.add(panelConvertidorDistancia, "name_193249832940700");
 		panelConvertidorDistancia.setLayout(null);
@@ -320,35 +397,66 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		lblConvertidorDeDistancia.setBounds(0, 0, 173, 22);
 		panelConvertidorDistancia.add(lblConvertidorDeDistancia);
 		
-		lblDistancia1 = new JLabel("Distancia 1:");
+		lblDistancia1 = new JLabel("Distancia Km\r\n:");
 		lblDistancia1.setBounds(10, 58, 77, 14);
 		panelConvertidorDistancia.add(lblDistancia1);
 		
-		textField_15 = new JTextField();
-		textField_15.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_15.setColumns(10);
-		textField_15.setBounds(79, 58, 84, 20);
-		panelConvertidorDistancia.add(textField_15);
+		textDistancia_1 = new JTextField();
+		textDistancia_1.setHorizontalAlignment(SwingConstants.RIGHT);
+		textDistancia_1.setColumns(10);
+		textDistancia_1.setBounds(79, 58, 84, 20);
+		panelConvertidorDistancia.add(textDistancia_1);
 		
 		separadores(panelConvertidorDistancia);
 		
-		btnNewButton_1 = new JButton("Convertir");
-		btnNewButton_1.setBounds(12, 153, 149, 23);
-		panelConvertidorDistancia.add(btnNewButton_1);
+		btnConvertirDistancia = new JButton("Convertir");
+		btnConvertirDistancia.setBounds(12, 153, 149, 23);
 		
-		textField_16 = new JTextField();
-		textField_16.setHorizontalAlignment(SwingConstants.RIGHT);
-		textField_16.setForeground(new Color(0, 128, 0));
-		textField_16.setColumns(10);
-		textField_16.setBounds(79, 122, 84, 20);
-		panelConvertidorDistancia.add(textField_16);
+		btnConvertirDistancia.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(e.getSource()==btnConvertirDistancia) 
+				{
+					Boolean argTo=true;
+					double distanciaDouble;
+					String distancia;
+					
+					try {
+						distancia=textDistancia_1.getText();
+						distanciaDouble=Double.parseDouble(distancia);
+
+						
+						textDistancia_2.setText(Procesos.convertirDistancia(distanciaDouble,(Distancias) boxDistancias.getSelectedItem())+"");
+						textDistancia_2.setForeground(new Color(0, 128, 0));
+						textDistancia_1.setText("");
+					} catch (Exception ex) {
+						distancia=textDistancia_2.getText();					
+						distanciaDouble=Double.parseDouble(distancia);
+
+						textDistancia_1.setText(Procesos.convertirDistancia(distanciaDouble,(Distancias) boxDistancias.getSelectedItem())+"");
+						textDistancia_1.setForeground(new Color(0, 128, 0));
+						textDistancia_2.setText("");
+					}
+				}
+			}
+		});
 		
-		boxCotizaciones_2 = new JComboBox();
-		boxCotizaciones_2.setModel(new DefaultComboBoxModel(new String[] {"KM", "M", "Pies", "Llardas", "Hectareas"}));
-		boxCotizaciones_2.setSelectedIndex(1);
-		boxCotizaciones_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		boxCotizaciones_2.setBounds(79, 89, 84, 22);
-		panelConvertidorDistancia.add(boxCotizaciones_2);
+		panelConvertidorDistancia.add(btnConvertirDistancia);
+		
+		textDistancia_2 = new JTextField();
+		textDistancia_2.setHorizontalAlignment(SwingConstants.RIGHT);
+		textDistancia_2.setForeground(new Color(0, 128, 0));
+		textDistancia_2.setColumns(10);
+		textDistancia_2.setBounds(79, 122, 84, 20);
+		panelConvertidorDistancia.add(textDistancia_2);
+		
+		boxDistancias = new JComboBox();
+		boxDistancias.setModel(new DefaultComboBoxModel(new Distancias[] {Distancias.M, Distancias.Pies,Distancias.Yardas, Distancias.Hectareas}));
+		boxDistancias.setSelectedIndex(0);
+		boxDistancias.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		boxDistancias.setBounds(79, 89, 84, 22);
+		panelConvertidorDistancia.add(boxDistancias);
 		
 		lblMoneda_5 = new JLabel("Moneda:");
 		lblMoneda_5.setBounds(10, 95, 60, 14);
